@@ -3,16 +3,15 @@ import os
 from threading import Thread
 import time
 
-#directory = "/volume1/music"
-directory = "/volume1/music"
-
+START_DIRECTORY = "/volume1/music"
+CONCURRENT_JOBS = 10
 changed = 0
-
 thread_list = []
 delete_list = []
 current_jobs = 0
-CONCURRENT_JOBS = 10
 
+# mp4=absolute path to mp4 file as string
+# mp3=absolute path to mp3 file as string
 def mp4_to_mp3(mp4, mp3):
 	global current_jobs
 	current_jobs += 1
@@ -21,9 +20,7 @@ def mp4_to_mp3(mp4, mp3):
 	mp4_without_frames.close()
 	current_jobs -= 1
 
-#mp4_to_mp3("my_mp4_path.mp4", "audio.mp3")
-
-for path, current_directory, files in os.walk(directory):
+for path, current_directory, files in os.walk(START_DIRECTORY):
 	for file in files:
 		mp4 = os.path.join(path, file)
 		pre, ext = os.path.splitext(mp4)
@@ -39,12 +36,10 @@ for path, current_directory, files in os.walk(directory):
 				time.sleep(1)
 				
 			mp3 = pre + ".mp3"
-			#mp4_to_mp3(mp4, mp3)
 			t = Thread(target=mp4_to_mp3,args=(mp4,mp3))
 			thread_list.append(t)
 			t.start()
 			delete_list.append(mp4)
-			#os.remove(mp4)
 			changed += 1
 
 for t in thread_list:
